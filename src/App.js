@@ -5,8 +5,13 @@ import "./App.css";
 import ReactTable from "react-table";
 import "react-table/react-table.css";
 import checkboxHOC from "react-table/lib/hoc/selectTable";
+import Select from "react-select";
+import "react-select/dist/react-select.css";
+import { Button, Form, FormGroup, Label, Input } from "reactstrap";
+
 const CheckboxTable = checkboxHOC(ReactTable);
 
+/**
 const listStyle = {
   listStyleType: "none",
   textAlign: "left",
@@ -16,11 +21,13 @@ const ulStyle = {
   maxWidth: "300px",
   margin: "auto"
 };
-
+*/
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      selectedOption: null,
+      groceryItem: "",
       list: [
         { item: "milk", category: "dairy", favorite: true, lastDate: "" },
         { item: "eggs", category: "dairy", favorite: true, lastDate: "" },
@@ -37,15 +44,34 @@ class App extends Component {
       selectAll: false
     };
   }
+  newItem(e) {
+    // console.log(`item: ${JSON.stringify(target.value, null, 4)}`);
+    // console.log(`TARGET, PROPS: ${JSON.stringify(this.props, null, 4)}`);
+    var stateCopy = Object.assign({}, this.state);
+    stateCopy.groceryItem = e.target.value;
+    this.setState(stateCopy);
+  }
   addItem() {
     console.log("adding item");
+    console.log(`CATEGORY: ${JSON.stringify(this.state, null, 4)}`);
+
     let new_item = {
-      item: "cheese",
-      category: "dairy",
+      item: this.state.groceryItem,
+      category: this.state.selectedOption.value
+        ? this.state.selectedOption.value
+        : "",
       favorite: false,
       lastDate: ""
     };
-    this.setState(state => ({ list: state.list.concat(new_item) }));
+    console.log(`NEW ITEM: ${JSON.stringify(new_item, null, 4)}`);
+    var stateCopy = Object.assign({}, this.state);
+    stateCopy.list = stateCopy.list.concat(new_item);
+    console.log(`NEW ITEM2: ${JSON.stringify(stateCopy.list, null, 4)}`);
+    stateCopy.groceryItem = "";
+    stateCopy.selectedOption = null;
+    this.setState(stateCopy);
+    console.log(`NEW ITEM: ${JSON.stringify(this.state, null, 4)}`);
+    // this.setState(state => ({ list: state.list.concat(new_item) }));
 
     /**
     this.setState({
@@ -53,18 +79,20 @@ class App extends Component {
     })
     */
   }
-  buildList() {
-    let list = null;
-    if (this.state.list) {
-      list = this.state.list.map((i, index) => {
-        return (
-          <li style={listStyle} key={index}>
-            {i.item}
-          </li>
-        );
-      });
-    }
-    return <ul style={ulStyle}>{list}</ul>;
+
+  handleChange(selectedOption) {
+    console.log(`CATEGORY: ${JSON.stringify(selectedOption, null, 4)}`);
+    console.log(`CATEGORY: ${JSON.stringify(this.state, null, 4)}`);
+    /**
+    console.log(`CATEGORY: ${JSON.stringify(selectedOption, null, 4)}`);
+    console.log(`CATEGORY: ${JSON.stringify(this.state, null, 4)}`);
+    let list = this.state.list;
+    this.setState(state => ({ selectedOption, list }));
+    */
+    var stateCopy = Object.assign({}, this.state);
+    stateCopy.selectedOption = selectedOption;
+    this.setState(stateCopy);
+    // this.setState({ selectedOption });
   }
 
   toggleSelection = (key, shift, row) => {
@@ -139,6 +167,8 @@ class App extends Component {
   };
 
   render() {
+    const { selectedOption } = this.state;
+    const value = selectedOption && selectedOption.value;
     const checkboxProps = {
       selectAll: this.state.selectAll,
       isSelected: this.isSelected,
@@ -159,7 +189,8 @@ class App extends Component {
           "@media (maxWidth: 780px)": {
             width: "50%"
           }
-        }}>
+        }}
+      >
         <header className="">
           <h1 className="text-center bg-info" style={{ borderRadius: "0" }}>
             Shopper
@@ -168,35 +199,76 @@ class App extends Component {
         {/**
         <div>{list}</div>
         */}
-        <div style={{ marginTop: "30px" }}>
-          <button className="btn btn-info" onClick={this.addItem.bind(this)}>
-            Add Item to List
-          </button>
+        <div className="container" style={{ marginTop: "30px" }}>
+          <Form inline>
+            <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+              <Label for="exampleEmail" className="mr-sm-2">
+                Item
+              </Label>
+              <Input
+                type="text"
+                name="item"
+                id="item"
+                value={this.state.groceryItem}
+                onChange={this.newItem.bind(this)}
+                placeholder="grocery item"
+              />
+            </FormGroup>
+            <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+              <Label for="examplePassword" className="mr-sm-2">
+                Category
+              </Label>
+              <Select
+                name="form-field-name"
+                value={value}
+                onChange={this.handleChange.bind(this)}
+                options={[
+                  { value: "dairy", label: "dairy" },
+                  { value: "produce", label: "produce" },
+                  { value: "frozen", label: "frozen" },
+                  { value: "deli", label: "deli" },
+                  { value: "paper", label: "paper" },
+                  { value: "cleaning", label: "cleaning" },
+                  { value: "canned", label: "canned" },
+                  { value: "spices", label: "spices" },
+                  { value: "boxed", label: "boxed" },
+                  { value: "breakfast", label: "breakfast" },
+                  { value: "snacks", label: "snacks" },
+                  { value: "meat", label: "meat" }
+                ]}
+              />
+            </FormGroup>
+            <Button className="btn btn-info" onClick={this.addItem.bind(this)}>
+              Add Item to List
+            </Button>
+          </Form>
         </div>
-        <CheckboxTable
-          columns={[
-            {
-              Header: "Item",
-              accessor: "item"
-            },
-            {
-              Header: "Category",
-              accessor: "category"
-            },
-            {
-              Header: "Favorite",
-              accessor: "favorite"
-            },
-            {
-              Header: "Last Date Bought",
-              accessor: "lastDate"
-            }
-          ]}
-          ref={r => (this.checkboxTable = r)}
-          data={this.state.list}
-          className="-striped -highlight"
-          {...checkboxProps}
-        />
+        <div>
+          <CheckboxTable
+            columns={[
+              {
+                Header: "Item",
+                accessor: "item"
+              },
+              {
+                Header: "Category",
+                accessor: "category"
+              },
+              {
+                Header: "Favorite",
+                accessor: "favorite"
+              },
+              {
+                Header: "Last Date Bought",
+                accessor: "lastDate"
+              }
+            ]}
+            ref={r => (this.checkboxTable = r)}
+            data={this.state.list}
+            className="-striped -highlight"
+            {...checkboxProps}
+          />
+        </div>
       </div>
     );
   }
