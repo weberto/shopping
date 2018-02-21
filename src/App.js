@@ -8,6 +8,7 @@ import checkboxHOC from "react-table/lib/hoc/selectTable";
 import Select from "react-select";
 import "react-select/dist/react-select.css";
 import { Button, Form, FormGroup, Label, Input } from "reactstrap";
+// import { Button, Form, FormGroup, Label, Select } from "react-bootstrap";
 
 const CheckboxTable = checkboxHOC(ReactTable);
 
@@ -189,8 +190,7 @@ class App extends Component {
           "@media (maxWidth: 780px)": {
             width: "50%"
           }
-        }}
-      >
+        }}>
         <header className="">
           <h1 className="text-center bg-info" style={{ borderRadius: "0" }}>
             Shopper
@@ -199,7 +199,9 @@ class App extends Component {
         {/**
         <div>{list}</div>
         */}
-        <div className="container" style={{ marginTop: "30px" }}>
+        <div
+          className="container"
+          style={{ margin: "30px 0 30px 0", background: "#cccccc" }}>
           <Form inline>
             <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
               <Label for="exampleEmail" className="mr-sm-2">
@@ -214,13 +216,16 @@ class App extends Component {
                 placeholder="grocery item"
               />
             </FormGroup>
-            <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+            <FormGroup className="mb-4 mr-sm-4 mb-sm-2">
               <Label for="examplePassword" className="mr-sm-2">
                 Category
               </Label>
               <Select
                 name="form-field-name"
                 value={value}
+                style={{ width: "100px" }}
+                placeholder="Category"
+                autosize={true}
                 onChange={this.handleChange.bind(this)}
                 options={[
                   { value: "dairy", label: "dairy" },
@@ -238,7 +243,10 @@ class App extends Component {
                 ]}
               />
             </FormGroup>
-            <Button className="btn btn-info" onClick={this.addItem.bind(this)}>
+            <Button
+              style={{ marginLeft: "60px" }}
+              className="btn btn-info"
+              onClick={this.addItem.bind(this)}>
               Add Item to List
             </Button>
           </Form>
