@@ -8,6 +8,7 @@ import checkboxHOC from "react-table/lib/hoc/selectTable";
 import Select from "react-select";
 import "react-select/dist/react-select.css";
 import { Button, Form, FormGroup, Label, Input } from "reactstrap";
+import { toast, ToastContainer } from "react-toastify";
 // import { Button, Form, FormGroup, Label, Select } from "react-bootstrap";
 
 const CheckboxTable = checkboxHOC(ReactTable);
@@ -55,12 +56,19 @@ class App extends Component {
   addItem() {
     console.log("adding item");
     console.log(`CATEGORY: ${JSON.stringify(this.state, null, 4)}`);
+    if (!(this.state.groceryItem && this.state.selectedOption.value)) {
+      toast("Error - cannot add item", {
+        type: toast.TYPE.WARNING,
+        position: toast.POSITION.TOP_CENTER
+      });
+      return;
+    }
 
     let new_item = {
       item: this.state.groceryItem,
       category: this.state.selectedOption.value
         ? this.state.selectedOption.value
-        : "",
+        : null,
       favorite: false,
       lastDate: ""
     };
@@ -72,8 +80,6 @@ class App extends Component {
     stateCopy.selectedOption = null;
     this.setState(stateCopy);
     console.log(`NEW ITEM: ${JSON.stringify(this.state, null, 4)}`);
-    // this.setState(state => ({ list: state.list.concat(new_item) }));
-
     /**
     this.setState({
       ...this.state,
@@ -201,7 +207,11 @@ class App extends Component {
         */}
         <div
           className="container"
-          style={{ margin: "30px 0 30px 0", background: "#cccccc" }}>
+          style={{
+            margin: "30px 0 30px 0",
+            background: "#cccccc",
+            padding: "20px"
+          }}>
           <Form inline>
             <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
               <Label for="exampleEmail" className="mr-sm-2">
@@ -223,7 +233,7 @@ class App extends Component {
               <Select
                 name="form-field-name"
                 value={value}
-                style={{ width: "100px" }}
+                style={{ width: "125px" }}
                 placeholder="Category"
                 autosize={true}
                 onChange={this.handleChange.bind(this)}
@@ -239,7 +249,8 @@ class App extends Component {
                   { value: "boxed", label: "boxed" },
                   { value: "breakfast", label: "breakfast" },
                   { value: "snacks", label: "snacks" },
-                  { value: "meat", label: "meat" }
+                  { value: "meat", label: "meat" },
+                  { value: "other", label: "other" }
                 ]}
               />
             </FormGroup>
@@ -277,6 +288,7 @@ class App extends Component {
             {...checkboxProps}
           />
         </div>
+        <ToastContainer />
       </div>
     );
   }
