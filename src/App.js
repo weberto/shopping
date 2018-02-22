@@ -31,21 +31,50 @@ class App extends Component {
       selectedOption: null,
       groceryItem: "",
       list: [
-        { item: "milk", category: "dairy", favorite: true, lastDate: "" },
-        { item: "eggs", category: "dairy", favorite: true, lastDate: "" },
         {
+          _id: "1000",
+          item: "milk",
+          category: "dairy",
+          favorite: true,
+          lastDate: ""
+        },
+        {
+          _id: "1001",
+          item: "eggs",
+          category: "dairy",
+          favorite: true,
+          lastDate: ""
+        },
+        {
+          _id: 1002,
           item: "peanut butter",
           category: "breakfast",
           favorite: false,
           lastDate: ""
         },
-        { item: "bread", category: "bread", favorite: true, lastDate: "" },
-        { item: "pasta", category: "pasta", favorite: true, lastDate: "" }
+        {
+          _id: 1003,
+          item: "bread",
+          category: "bread",
+          favorite: true,
+          lastDate: ""
+        },
+        {
+          _id: 1004,
+          item: "pasta",
+          category: "pasta",
+          favorite: true,
+          lastDate: ""
+        }
       ],
       selection: [],
       selectAll: false
     };
   }
+  updateRow(e) {
+    alert(e.target.value);
+  }
+
   newItem(e) {
     // console.log(`item: ${JSON.stringify(target.value, null, 4)}`);
     // console.log(`TARGET, PROPS: ${JSON.stringify(this.props, null, 4)}`);
@@ -124,6 +153,7 @@ class App extends Component {
     }
     // update the state
     this.setState({ selection });
+    console.log(`TOGGLE: ${JSON.stringify(this.state, null, 4)}`);
   };
 
   toggleAll = () => {
@@ -284,8 +314,31 @@ class App extends Component {
             ]}
             ref={r => (this.checkboxTable = r)}
             data={this.state.list}
-            className="-striped -highlight"
+            className={
+              "-striped -highlight " +
+              (this.isSelected(this.props._id) ? "strikethru" : null)
+            }
             {...checkboxProps}
+            getTdProps={(state, rowInfo, column, instance) => {
+              return {
+                onClick: (e, handleOriginal) => {
+                  console.log("A Td Element was clicked!");
+                  console.log("it produced this event:", e);
+                  console.log("It was in this column:", column);
+                  console.log("It was in this row:", rowInfo);
+                  console.log("It was in this table instance:", instance);
+
+                  // IMPORTANT! React-Table uses onClick internally to trigger
+                  // events like expanding SubComponents and pivots.
+                  // By default a custom 'onClick' handler will override this functionality.
+                  // If you want to fire the original onClick handler, call the
+                  // 'handleOriginal' function.
+                  if (handleOriginal) {
+                    handleOriginal();
+                  }
+                }
+              };
+            }}
           />
         </div>
         <ToastContainer />
